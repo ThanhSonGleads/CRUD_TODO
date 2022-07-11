@@ -1,13 +1,14 @@
 import {
   CREATE_PRODUCT,
   DELETE_PRODUCT,
-  FILTER_STATUS,
-  GET_PRODUCT,
+  GET_PRODUCT_PAGINATION,
+  PRODUCT_PARAMS,
   SEARCH_PRODUCT,
   SIGNIN,
   SIGNUP,
-  SORT_PRODUCT,
   UPDATE_PRODUCT,
+  SORT_PRODUCT,
+  FILTER_PRODUCT,
 } from "../constant";
 
 const initialState = {
@@ -26,17 +27,19 @@ export default (state = initialState, action) => {
     case SIGNIN:
       state.signin = action.payload;
       return { ...state };
-    case GET_PRODUCT:
-      state.data_product = action.payload;
-      console.log('data_productsssss', action.payload);
-      return { ...state };
     case SEARCH_PRODUCT:
       state.data_product = action.payload;
       return { ...state };
     case SORT_PRODUCT:
       state.data_product = action.payload;
       return { ...state };
-    case FILTER_STATUS:
+    case FILTER_PRODUCT:
+      state.data_product = action.payload;
+      return { ...state };
+    case PRODUCT_PARAMS:
+      state.data_product = action.payload;
+      return { ...state };
+    case GET_PRODUCT_PAGINATION:
       state.data_product = action.payload;
       return { ...state };
     case DELETE_PRODUCT:

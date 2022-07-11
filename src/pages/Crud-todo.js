@@ -8,15 +8,17 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Box } from "@mui/system";
 import {
   create_product,
   delete_product,
-  filter_status,
+  filter_product,
   get_product,
+  get_product_pagination,
+  product_params,
   search_product,
   sort_product,
   update_product,
@@ -99,10 +101,20 @@ export default function CrudTodo() {
   const [valueUpdate, setValueUpdate] = useState("");
   const [dataLength, setDataLength] = useState([]);
 
+  /*Search Params */
+  const [sortFilterParams, setSeacrhParams] = useSearchParams();
+
+  const data = useSelector((state) => state.reducers.data_product);
+
   /* Effect Get All Products */
   useEffect(() => {
     getProduct();
   }, []);
+
+  /*Effect Get Products Pagination */
+  useEffect(() => {
+    dispatch(get_product_pagination(page, limit));
+  }, [dispatch]);
 
   /* Effect Loading Page */
   useEffect(() => {
@@ -125,18 +137,12 @@ export default function CrudTodo() {
     }
   }, [dataSignin]);
 
-  /* Effect Get Products Pagination */
-  useEffect(() => {
-    dispatch(get_product(page, limit));
-  }, [dispatch, page, limit]);
-  const data = useSelector((state) => state.reducers.data_product);
-
   /* Effect Update Form */
   useEffect(() => {
     form.reset({
       keyword: form.keyword,
     });
-  }, []);
+  }, [form]);
 
   const getProduct = async () => {
     let data = await axios.get(`${DOMAIN}/Products`);
@@ -146,6 +152,39 @@ export default function CrudTodo() {
   const handleChangePage = (e, newPage) => {
     console.log("newPage", newPage);
     setPage(newPage);
+    if (statusValue !== "") {
+      setSeacrhParams({
+        status: statusValue,
+        page: newPage,
+        limit: limit,
+      });
+      dispatch(filter_product(statusValue, newPage, limit));
+    } else if (sortValue !== "") {
+      setSeacrhParams({
+        _sort: sortValue,
+        _order: "asc",
+        page: newPage,
+        limit: limit,
+      });
+      dispatch(sort_product(sortValue, newPage, limit));
+    } else if ((sortValue || statusValue) == "") {
+      setSeacrhParams({
+        keyword: keyword,
+        page: newPage,
+        limit: limit,
+      });
+      dispatch(search_product(keyword, newPage, limit));
+    } else {
+      setSeacrhParams({
+        keyword: keyword,
+        _sort: sortValue,
+        _order: "asc",
+        status: statusValue,
+        page: newPage,
+        limit: limit,
+      });
+      dispatch(product_params(keyword, sortValue, statusValue, newPage, limit));
+    }
   };
 
   const handleDelete = (id, page, limit) => {
@@ -163,19 +202,75 @@ export default function CrudTodo() {
   };
 
   const handleSearch = () => {
-    dispatch(search_product(keyword, page, limit));
+    if ((sortValue || statusValue) == "") {
+      setSeacrhParams({
+        keyword: keyword,
+        page: page,
+        limit: limit,
+      });
+      dispatch(search_product(keyword, page, limit));
+    } else {
+      setSeacrhParams({
+        keyword: keyword,
+        _sort: sortValue,
+        _order: "asc",
+        status: statusValue,
+        page: page,
+        limit: limit,
+      });
+      dispatch(product_params(keyword, sortValue, statusValue, page, limit));
+    }
+  };
+
+  const handleReset = () => {
+    window.location.reload();
   };
 
   const handleSort = (e) => {
     let valueSort = e.target.value;
     setSortValue(valueSort);
-    dispatch(sort_product(valueSort, page, limit));
+    if (statusValue == "") {
+      setSeacrhParams({
+        _sort: valueSort,
+        _order: "asc",
+        page: page,
+        limit: limit,
+      });
+      dispatch(sort_product(valueSort, page, limit));
+    } else {
+      setSeacrhParams({
+        keyword: keyword,
+        _sort: valueSort,
+        _order: "asc",
+        status: statusValue,
+        page: page,
+        limit: limit,
+      });
+      dispatch(product_params(keyword, valueSort, statusValue, page, limit));
+    }
   };
 
   const handleFilterStatus = (e) => {
     let valueFilter = e.target.value;
     setStatusValue(valueFilter);
-    dispatch(filter_status(valueFilter, page, limit));
+    if (sortValue == "" && keyword == "") {
+      setSeacrhParams({
+        status: valueFilter,
+        page: page,
+        limit: limit,
+      });
+      dispatch(filter_product(valueFilter, page, limit));
+    } else {
+      setSeacrhParams({
+        keyword: keyword,
+        _sort: sortValue,
+        _order: "asc",
+        status: valueFilter,
+        page: page,
+        limit: limit,
+      });
+      dispatch(product_params(keyword, sortValue, valueFilter, page, limit));
+    }
   };
 
   const handleLogOut = () => {
@@ -234,13 +329,24 @@ export default function CrudTodo() {
                   />
                   <LoadingButton
                     size="small"
-                    color="success"
+                    color="primary"
                     type="button"
                     variant="contained"
                     flexShrink={0}
                     onClick={() => handleSearch()}
                   >
                     Search
+                  </LoadingButton>
+                  <LoadingButton
+                    size="small"
+                    color="success"
+                    type="button"
+                    variant="contained"
+                    flexShrink={0}
+                    sx={{ ml: 2 }}
+                    onClick={() => handleReset()}
+                  >
+                    Reset
                   </LoadingButton>
                 </Box>
                 <LoadingButton
@@ -260,26 +366,7 @@ export default function CrudTodo() {
                 alignItems={"center"}
                 justifyContent={"space-between"}
               >
-                <FormControl variant="standard" sx={{ m: 1, width: "20%" }}>
-                  <InputLabel id="sort-label">Sort</InputLabel>
-                  <Select
-                    labelId="sort-label"
-                    id="sort"
-                    value={sortValue}
-                    variant="standard"
-                    label="Sort"
-                    onChange={handleSort}
-                  >
-                    {sortOptions?.map((item, index) => {
-                      return (
-                        <MenuItem value={item} key={index}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-                <FormControl variant="standard" sx={{ m: 1, width: "20%" }}>
+                <FormControl variant="standard" sx={{ width: "20%" }}>
                   <InputLabel id="filter-status-label">
                     Filter-Status
                   </InputLabel>
@@ -292,6 +379,25 @@ export default function CrudTodo() {
                     onChange={handleFilterStatus}
                   >
                     {filterStatus?.map((item, index) => {
+                      return (
+                        <MenuItem value={item} key={index}>
+                          {item}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+                <FormControl variant="standard" sx={{ width: "20%" }}>
+                  <InputLabel id="sort-label">Sort</InputLabel>
+                  <Select
+                    labelId="sort-label"
+                    id="sort"
+                    value={sortValue}
+                    variant="standard"
+                    label="Sort"
+                    onChange={handleSort}
+                  >
+                    {sortOptions?.map((item, index) => {
                       return (
                         <MenuItem value={item} key={index}>
                           {item}
@@ -322,7 +428,7 @@ export default function CrudTodo() {
                       justifyContent={"space-around"}
                       alignItems={"center"}
                     >
-                      <Typography sx={{ ml: 10 }}>Action</Typography>
+                      <Typography sx={{ ml: 5, mr: 2 }}>Action</Typography>
                       <LoadingButton
                         sx={{ mr: -1 }}
                         size="small"
