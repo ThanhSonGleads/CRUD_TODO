@@ -45,9 +45,10 @@ const schema = yup
   })
   .required();
 
-export default function Modal({ data }) {
+export default function Modal() {
   const form = useForm({
     defaultValues: {
+      id: null,
       title: null,
       status: null,
       description: null,
@@ -56,37 +57,28 @@ export default function Modal({ data }) {
     },
     resolver: yupResolver(schema),
   });
-  const [valueEndDate, setValueEndDate] = useState(dateFormat);
+
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
   const isCreates = useSelector((state) => state.reducers.isCreate);
   const isUpdate = useSelector((state) => state.reducers.isUpdate);
+  const data = useSelector((state) => state.reducers.data_update);
+
   const dispatch = useDispatch();
 
   console.log("dataUpdate", data);
 
   /*Effect Update Form Create Or Update */
   useEffect(() => {
-    if (isCreates) {
-      form.reset({
-        id: form.id,
-        title: form.title,
-        status: form.status,
-        description: form.description,
-        start_date: dateFormat,
-        end_date: valueEndDate,
-      });
-    } else if (isUpdate) {
-      form.reset({
-        id: data.id,
-        title: data.title,
-        status: data.status,
-        description: data.description,
-        start_date: data.start_date,
-        end_date: data.end_date,
-      });
-    }
-  }, [form, data]);
+    form.reset({
+      id: data.id,
+      title: data.title,
+      status: data.status,
+      description: data.description,
+      start_date: data.start_date || dateFormat,
+      end_date: data.end_date || "",
+    });
+  }, [form, data, dateFormat]);
 
   const handleClose = () => {
     if (isCreates) {
@@ -94,10 +86,6 @@ export default function Modal({ data }) {
     } else {
       dispatch(createAction(UPDATE_PRODUCT, false));
     }
-  };
-
-  const handleChangeEndDate = (newValues) => {
-    setValueEndDate(newValues);
   };
 
   const onSubmit = (values) => {
@@ -182,16 +170,31 @@ export default function Modal({ data }) {
                   <Grid item xs={6}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <Stack spacing={3}>
-                        <DesktopDatePicker
-                          minDate={now()}
+                        <Controller
                           name={"end_date"}
-                          label="End Date"
-                          inputFormat="MM/dd/yyyy"
-                          value={valueEndDate}
-                          onChange={handleChangeEndDate}
-                          renderInput={(params) => (
-                            <TextField {...params} variant="standard" />
-                          )}
+                          control={form.control}
+                          render={({
+                            field: { onChange, value },
+                            fieldState: { invalid, isTouched, isDirty, error },
+                          }) => {
+                            return (
+                              <DesktopDatePicker
+                                minDate={now()}
+                                label="End Date"
+                                value={value}
+                                inputFormat="MM/dd/yyyy"
+                                onChange={onChange}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="standard"
+                                    error={invalid}
+                                    helperText={error?.message || ""}
+                                  />
+                                )}
+                              />
+                            );
+                          }}
                         />
                       </Stack>
                     </LocalizationProvider>

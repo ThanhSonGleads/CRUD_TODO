@@ -31,7 +31,6 @@ import { DOMAIN } from "../redux/constant";
 import Swal from "sweetalert2";
 import Link from "@mui/material/Link";
 import SelectField from "../component/SelectField";
-import { dateFormat } from "../helper/dateformat";
 
 const genderOptions = [{ label: "Male" }, { label: "Female" }];
 
@@ -57,7 +56,7 @@ const schema = yup
 
 const theme = createTheme();
 
-export default function MUI() {
+export default function SignUp() {
   const form = useForm({
     defaultValues: {
       name: null,
@@ -72,9 +71,13 @@ export default function MUI() {
   });
 
   const dispatch = useDispatch();
-  const [valueDayOfBirth, setValueDayOfBirth] = useState('');
   const [loading, setLoading] = useState(false);
 
+  /*Effect Remove Key LocalStorage */
+  useEffect(() => {
+    localStorage.removeItem('login')
+  }, [])
+  
   /* Effect Loading Page */
   useEffect(() => {
     setLoading(true);
@@ -92,14 +95,10 @@ export default function MUI() {
       confirm_password: form.confirm_password,
       address: form.address,
       gender: form.gender,
-      dayOfBirth: valueDayOfBirth,
+      dayOfBirth: form.dayOfBirth || "",
     });
-  }, [form, valueDayOfBirth]);
+  }, [form]);
 
-  console.log("valueDOB", valueDayOfBirth);
-  const handleChangeDOB = (newValue) => {
-    setValueDayOfBirth(newValue);
-  };
   const checkUser = (serverUsers, formData) => {
     const user = serverUsers.find(
       (user) => user.username === formData.username
@@ -233,11 +232,12 @@ export default function MUI() {
                                   maxDate={now()}
                                   variant="standard"
                                   label="Birthday"
-                                  value={valueDayOfBirth}
+                                  value={value}
                                   inputFormat="MM/dd/yyyy"
-                                  onChange={handleChangeDOB}
+                                  onChange={onChange}
                                   renderInput={(params) => (
                                     <TextField
+                                      variant="standard"
                                       {...params}
                                       error={invalid}
                                       helperText={error?.message || ""}

@@ -25,7 +25,7 @@ const schema = yup
 
 const theme = createTheme();
 
-export default function MUI() {
+export default function SignIn() {
   const form = useForm({
     defaultValues: {
       username: null,

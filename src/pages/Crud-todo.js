@@ -20,6 +20,7 @@ import {
   get_product_pagination,
   product_params,
   search_product,
+  search_sort_product,
   sort_product,
   update_product,
 } from "../redux/action/product";
@@ -29,6 +30,7 @@ import {
   CREATE_PRODUCT,
   DOMAIN,
   SEARCH_PRODUCT,
+  SET_UPDATE,
   SORT_PRODUCT,
   UPDATE_PRODUCT,
 } from "../redux/constant";
@@ -46,9 +48,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import CreateProduct from "../component/Create";
 import axios from "axios";
-import UpdateProduct from "../component/Update";
 import Loading from "../component/Loading";
 import Modal from "../component/Modal";
 
@@ -98,13 +98,28 @@ export default function CrudTodo() {
   const [limit] = useState(5);
   const [sortValue, setSortValue] = useState("");
   const [statusValue, setStatusValue] = useState("");
-  const [valueUpdate, setValueUpdate] = useState("");
   const [dataLength, setDataLength] = useState([]);
+  const data = useSelector((state) => state.reducers.data_product);
 
   /*Search Params */
-  const [sortFilterParams, setSeacrhParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const data = useSelector((state) => state.reducers.data_product);
+  /*Effect SetSearchParams */
+  useEffect(() => {
+    if (keyword.length === 0) {
+      searchParams.delete("keyword");
+      setSearchParams(searchParams, { replace: true });
+    }
+    if (sortValue === "") {
+      searchParams.delete("_sort");
+      searchParams.delete("_order");
+      setSearchParams(searchParams, { replace: true });
+    }
+    if (statusValue === "") {
+      searchParams.delete("status");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [keyword, sortValue, statusValue, searchParams]);
 
   /* Effect Get All Products */
   useEffect(() => {
@@ -152,15 +167,21 @@ export default function CrudTodo() {
   const handleChangePage = (e, newPage) => {
     console.log("newPage", newPage);
     setPage(newPage);
-    if (statusValue !== "") {
-      setSeacrhParams({
+    if ((sortValue || keyword || statusValue) == "") {
+      setSearchParams({
+        page: newPage,
+        limit: limit,
+      });
+      dispatch(get_product_pagination(newPage, limit));
+    } else if ((sortValue || keyword) == "") {
+      setSearchParams({
         status: statusValue,
         page: newPage,
         limit: limit,
       });
       dispatch(filter_product(statusValue, newPage, limit));
-    } else if (sortValue !== "") {
-      setSeacrhParams({
+    } else if ((statusValue || keyword) == "") {
+      setSearchParams({
         _sort: sortValue,
         _order: "asc",
         page: newPage,
@@ -168,14 +189,23 @@ export default function CrudTodo() {
       });
       dispatch(sort_product(sortValue, newPage, limit));
     } else if ((sortValue || statusValue) == "") {
-      setSeacrhParams({
+      setSearchParams({
         keyword: keyword,
         page: newPage,
         limit: limit,
       });
       dispatch(search_product(keyword, newPage, limit));
+    } else if (statusValue === "") {
+      setSearchParams({
+        keyword: keyword,
+        _sort: sortValue,
+        _order: "asc",
+        page: newPage,
+        limit: limit,
+      });
+      dispatch(search_sort_product(keyword, sortValue, newPage, limit));
     } else {
-      setSeacrhParams({
+      setSearchParams({
         keyword: keyword,
         _sort: sortValue,
         _order: "asc",
@@ -192,25 +222,35 @@ export default function CrudTodo() {
   };
 
   const handleUpdate = async (id) => {
-    dispatch(createAction(UPDATE_PRODUCT, true));
     let dataUpdate = await axios.get(`${DOMAIN}/Products/${id}`);
-    setValueUpdate(dataUpdate.data);
+    dispatch(createAction(UPDATE_PRODUCT, true));
+    dispatch(createAction(SET_UPDATE, dataUpdate.data));
   };
 
   const handleCreate = () => {
     dispatch(createAction(CREATE_PRODUCT, true));
+    dispatch(createAction(SET_UPDATE, []));
   };
 
   const handleSearch = () => {
-    if ((sortValue || statusValue) == "") {
-      setSeacrhParams({
+    if (statusValue === "") {
+      setSearchParams({
+        keyword: keyword,
+        _sort: sortValue,
+        _order: "asc",
+        page: page,
+        limit: limit,
+      });
+      dispatch(search_sort_product(keyword, sortValue, page, limit));
+    } else if (sortValue === "" && statusValue === "") {
+      setSearchParams({
         keyword: keyword,
         page: page,
         limit: limit,
       });
       dispatch(search_product(keyword, page, limit));
     } else {
-      setSeacrhParams({
+      setSearchParams({
         keyword: keyword,
         _sort: sortValue,
         _order: "asc",
@@ -229,16 +269,25 @@ export default function CrudTodo() {
   const handleSort = (e) => {
     let valueSort = e.target.value;
     setSortValue(valueSort);
-    if (statusValue == "") {
-      setSeacrhParams({
+    if (statusValue === "" && keyword === "") {
+      setSearchParams({
         _sort: valueSort,
         _order: "asc",
         page: page,
         limit: limit,
       });
       dispatch(sort_product(valueSort, page, limit));
+    } else if (statusValue === "") {
+      setSearchParams({
+        keyword: keyword,
+        _sort: valueSort,
+        _order: "asc",
+        page: page,
+        limit: limit,
+      });
+      dispatch(search_sort_product(keyword, valueSort, page, limit));
     } else {
-      setSeacrhParams({
+      setSearchParams({
         keyword: keyword,
         _sort: valueSort,
         _order: "asc",
@@ -253,15 +302,15 @@ export default function CrudTodo() {
   const handleFilterStatus = (e) => {
     let valueFilter = e.target.value;
     setStatusValue(valueFilter);
-    if (sortValue == "" && keyword == "") {
-      setSeacrhParams({
+    if (sortValue === "" && keyword === "") {
+      setSearchParams({
         status: valueFilter,
         page: page,
         limit: limit,
       });
       dispatch(filter_product(valueFilter, page, limit));
     } else {
-      setSeacrhParams({
+      setSearchParams({
         keyword: keyword,
         _sort: sortValue,
         _order: "asc",
@@ -503,9 +552,7 @@ export default function CrudTodo() {
               />
             </Stack>
           </TableContainer>
-          <CreateProduct />
-          <UpdateProduct data={valueUpdate} />
-          {/*<Modal data={valueUpdate} />*/}
+          <Modal />
         </Box>
       )}
     </>

@@ -8,6 +8,7 @@ import {
   GET_PRODUCT_PAGINATION,
   PRODUCT_PARAMS,
   SEARCH_PRODUCT,
+  SEARCH_SORT_PRODUCT,
   SORT_PRODUCT,
   UPDATE_PRODUCT,
 } from "../constant";
@@ -42,6 +43,7 @@ export const search_product = (keyword, page, limit) => {
     };
   } catch (err) {}
 };
+
 export const sort_product = (valueSort, page, limit) => {
   try {
     return async (dispatch) => {
@@ -56,6 +58,7 @@ export const sort_product = (valueSort, page, limit) => {
     };
   } catch (err) {}
 };
+
 export const filter_product = (valueFilter, page, limit) => {
   try {
     return async (dispatch) => {
@@ -70,6 +73,22 @@ export const filter_product = (valueFilter, page, limit) => {
     };
   } catch (err) {}
 };
+
+export const search_sort_product = (keyword, valueSort, page, limit) => {
+  try {
+    return async (dispatch) => {
+      await axios
+        .get(
+          `http://localhost:3000/Products?q=${keyword}&_sort=${valueSort}&_order=acs&_page=${page}&_limit=${limit}`
+        )
+        .then((res) => {
+          dispatch(createAction(SEARCH_SORT_PRODUCT, res.data));
+        })
+        .catch((err) => console.log(err));
+    };
+  } catch (err) {}
+};
+
 export const product_params = (
   keyword,
   valueSort,
@@ -91,6 +110,7 @@ export const product_params = (
         });
   } catch (err) {}
 };
+
 export const delete_product = (id, page, limit) => {
   try {
     return async (dispatch) => {
