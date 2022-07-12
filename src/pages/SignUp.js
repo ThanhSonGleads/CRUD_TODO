@@ -31,6 +31,7 @@ import { DOMAIN } from "../redux/constant";
 import Swal from "sweetalert2";
 import Link from "@mui/material/Link";
 import SelectField from "../component/SelectField";
+import DateField from "../component/DateField";
 
 const genderOptions = [{ label: "Male" }, { label: "Female" }];
 
@@ -75,9 +76,9 @@ export default function SignUp() {
 
   /*Effect Remove Key LocalStorage */
   useEffect(() => {
-    localStorage.removeItem('login')
-  }, [])
-  
+    localStorage.removeItem("login");
+  }, []);
+
   /* Effect Loading Page */
   useEffect(() => {
     setLoading(true);
@@ -215,37 +216,11 @@ export default function SignUp() {
                     <Grid item xs={12}>
                       <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <Stack spacing={3}>
-                          <Controller
+                          <DateField
                             name={"dayOfBirth"}
-                            control={form.control}
-                            render={({
-                              field: { onChange, value },
-                              fieldState: {
-                                invalid,
-                                isTouched,
-                                isDirty,
-                                error,
-                              },
-                            }) => {
-                              return (
-                                <DesktopDatePicker
-                                  maxDate={now()}
-                                  variant="standard"
-                                  label="Birthday"
-                                  value={value}
-                                  inputFormat="MM/dd/yyyy"
-                                  onChange={onChange}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      variant="standard"
-                                      {...params}
-                                      error={invalid}
-                                      helperText={error?.message || ""}
-                                    />
-                                  )}
-                                />
-                              );
-                            }}
+                            form={form}
+                            label={"Birthday"}
+                            maxDate={now()}
                           />
                         </Stack>
                       </LocalizationProvider>

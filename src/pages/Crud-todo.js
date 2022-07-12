@@ -51,6 +51,7 @@ import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import Loading from "../component/Loading";
 import Modal from "../component/Modal";
+import { BarLoader } from "react-spinners";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -93,6 +94,8 @@ export default function CrudTodo() {
   const dispatch = useDispatch();
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+  const [loadingLogout, setLoadingLogout] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
@@ -233,6 +236,7 @@ export default function CrudTodo() {
   };
 
   const handleSearch = () => {
+    setLoadingSearch(true);
     if (statusValue === "") {
       setSearchParams({
         keyword: keyword,
@@ -260,6 +264,7 @@ export default function CrudTodo() {
       });
       dispatch(product_params(keyword, sortValue, statusValue, page, limit));
     }
+    setLoadingSearch(false);
   };
 
   const handleReset = () => {
@@ -381,6 +386,7 @@ export default function CrudTodo() {
                     color="primary"
                     type="button"
                     variant="contained"
+                    loading={loadingSearch}
                     flexShrink={0}
                     onClick={() => handleSearch()}
                   >
@@ -403,6 +409,7 @@ export default function CrudTodo() {
                   color="primary"
                   type="button"
                   variant="contained"
+                  loading={loadingLogout}
                   onClick={() => handleLogOut()}
                 >
                   LogOut

@@ -36,16 +36,22 @@ export default function SignIn() {
 
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [loadingSignin, setLoadingSignIn] = useState(false);
 
- /* Effect Loading Page */
+  /*Effect Remove Key LocalStorage */
+  useEffect(() => {
+    localStorage.removeItem("login");
+  }, []);
+
+  /* Effect Loading Page */
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
     }, 1000);
   }, []);
-  
- /* Effect Update Form */
+
+  /* Effect Update Form */
   useEffect(() => {
     form.reset({
       username: form.username,
@@ -54,8 +60,9 @@ export default function SignIn() {
   }, []);
 
   const onSubmit = (values) => {
-    console.log("values", values);
+    setLoadingSignIn(true);
     dispatch(signIn(values));
+    setLoadingSignIn(false);
   };
 
   return (
@@ -106,9 +113,10 @@ export default function SignIn() {
                     type={"submit"}
                     fullWidth
                     variant="contained"
+                    loading={loadingSignin}
                     sx={{ mt: 3, mb: 2 }}
                   >
-                    Sign Up
+                    Sign In
                   </LoadingButton>
                   <Grid item>
                     <Link href="/" variant="body2">

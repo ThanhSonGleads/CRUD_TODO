@@ -61,7 +61,7 @@ export const signIn = (form) => {
           } else {
             Swal.fire({
               title: "",
-              html: `<a  style="color: red">User NotFound</a>`,
+              html: `<a  style="color: red">User Not Found</a>`,
               icon: "error",
               confirmButtonText: "Confirm",
             });

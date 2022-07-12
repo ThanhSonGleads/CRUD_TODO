@@ -32,6 +32,7 @@ import { useState } from "react";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { dateFormat } from "../../helper/dateformat";
 import SelectField from "../SelectField";
+import DateField from "../DateField";
 
 const statusOptions = [{ label: "Processing" }, { label: "Done" }];
 
@@ -170,31 +171,11 @@ export default function Modal() {
                   <Grid item xs={6}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <Stack spacing={3}>
-                        <Controller
+                        <DateField
                           name={"end_date"}
-                          control={form.control}
-                          render={({
-                            field: { onChange, value },
-                            fieldState: { invalid, isTouched, isDirty, error },
-                          }) => {
-                            return (
-                              <DesktopDatePicker
-                                minDate={now()}
-                                label="End Date"
-                                value={value}
-                                inputFormat="MM/dd/yyyy"
-                                onChange={onChange}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="standard"
-                                    error={invalid}
-                                    helperText={error?.message || ""}
-                                  />
-                                )}
-                              />
-                            );
-                          }}
+                          form={form}
+                          label={"End Date"}
+                          minDate={now()}
                         />
                       </Stack>
                     </LocalizationProvider>
