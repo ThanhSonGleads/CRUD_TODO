@@ -6,6 +6,7 @@ import {
   FILTER_STATUS,
   GET_PRODUCT,
   GET_PRODUCT_PAGINATION,
+  ORDER_PRODUCT,
   PRODUCT_PARAMS,
   SEARCH_PRODUCT,
   SEARCH_SORT_PRODUCT,
@@ -111,6 +112,20 @@ export const product_params = (
   } catch (err) {}
 };
 
+export const product_detail = (id) => {
+  try {
+    return async (dispatch) => {
+      await axios({
+        url: `${DOMAIN}/Products/${id}`,
+        method: "GET",
+      })
+        .then((res) => {
+          dispatch(createAction(ORDER_PRODUCT, res.data));
+        })
+        .catch((err) => {});
+    };
+  } catch (err) {}
+};
 export const delete_product = (id, page, limit) => {
   try {
     return async (dispatch) => {

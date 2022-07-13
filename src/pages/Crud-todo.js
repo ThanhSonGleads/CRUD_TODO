@@ -18,6 +18,7 @@ import {
   filter_product,
   get_product,
   get_product_pagination,
+  order_detail,
   product_params,
   search_product,
   search_sort_product,
@@ -52,6 +53,7 @@ import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import Loading from "../component/Loading";
 import Modal from "../component/Modal";
+import Selected from "../component/Selected";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -73,6 +75,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function CrudTodo() {
+  /*Luu url params khi F5 van giu nguyen data */
+
   const sortOptions = [
     "title",
     "status",
@@ -104,6 +108,7 @@ export default function CrudTodo() {
   const [statusValue, setStatusValue] = useState("");
   const [dataLength, setDataLength] = useState([]);
   const data = useSelector((state) => state.reducers.data_product);
+
   /*Search Params */
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -229,11 +234,12 @@ export default function CrudTodo() {
     dispatch(createAction(UPDATE_PRODUCT, true));
     dispatch(createAction(SET_UPDATE, dataUpdate.data));
   };
+
   const handleOrder = async (id) => {
-    navigator(`/crud-todo/:${id}`);
-    let dataOrder = await axios.get(`${DOMAIN}/Products/${id}`);
-    dispatch(createAction(ORDER_PRODUCT, dataOrder.data));
+    navigator(`/crud-todo/tree-todo`);
+    //dispatch(order_detail(id));
   };
+
   const handleCreate = () => {
     dispatch(createAction(CREATE_PRODUCT, true));
     dispatch(createAction(SET_UPDATE, []));
@@ -430,48 +436,34 @@ export default function CrudTodo() {
                   <InputLabel id="filter-status-label">
                     Filter-Status
                   </InputLabel>
-                  <Select
+                  <Selected
                     labelId="filter-status-label"
                     id="filter-status"
                     value={statusValue}
                     variant="standard"
                     label="Filter"
                     onChange={handleFilterStatus}
-                  >
-                    {filterStatus?.map((item, index) => {
-                      return (
-                        <MenuItem value={item} key={index}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
+                    options={filterStatus}
+                  />
                 </FormControl>
                 <FormControl variant="standard" sx={{ width: "20%" }}>
                   <InputLabel id="sort-label">Sort</InputLabel>
-                  <Select
+                  <Selected
                     labelId="sort-label"
                     id="sort"
                     value={sortValue}
                     variant="standard"
                     label="Sort"
                     onChange={handleSort}
-                  >
-                    {sortOptions?.map((item, index) => {
-                      return (
-                        <MenuItem value={item} key={index}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
+                    options={sortOptions}
+                  />
                 </FormControl>
               </Box>
             </Box>
           </Box>
           <TableContainer
             component={Paper}
-            sx={{ width: "70%", margin: "auto", marginTop: 2, mb: "2%" }}
+            sx={{ width: "90%", margin: "auto", marginTop: 2, mb: "2%" }}
           >
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>
@@ -482,24 +474,35 @@ export default function CrudTodo() {
                   <StyledTableCell align="left">Status</StyledTableCell>
                   <StyledTableCell align="left">Start Date</StyledTableCell>
                   <StyledTableCell align="left">End Date</StyledTableCell>
-                  <StyledTableCell align="center">
+                  <StyledTableCell align="left">
                     <Box
                       display={"flex"}
                       justifyContent={"space-around"}
-                      alignItems={"center"}
+                      alignItems={"left"}
                     >
                       <Typography sx={{ ml: 5, mr: 2 }}>Action</Typography>
-                      <LoadingButton
-                        sx={{ mr: -1 }}
-                        size="small"
-                        color="primary"
-                        type="button"
-                        variant="contained"
-                        onClick={() => handleCreate()}
-                      >
-                        Create
-                      </LoadingButton>
                     </Box>
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <LoadingButton
+                      sx={{ mr: 2 }}
+                      size="small"
+                      color="primary"
+                      type="button"
+                      variant="contained"
+                      onClick={() => handleCreate()}
+                    >
+                      Create
+                    </LoadingButton>
+                    <LoadingButton
+                      size="small"
+                      color="success"
+                      onClick={() => handleOrder()}
+                      loading={loadingOrder}
+                      variant="contained"
+                    >
+                      Order
+                    </LoadingButton>
                   </StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -544,17 +547,9 @@ export default function CrudTodo() {
                         >
                           Update
                         </LoadingButton>
-                        <LoadingButton
-                          size="small"
-                          color="primary"
-                          onClick={() => handleOrder(item.id)}
-                          loading={loadingOrder}
-                          variant="contained"
-                        >
-                          Order
-                        </LoadingButton>
                       </Box>
                     </StyledTableCell>
+                    <StyledTableCell align="left"></StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>

@@ -1,0 +1,95 @@
+{
+    "Products": [
+        {
+            "parent_id": "root",
+            "name": "Parent",
+            "items": [
+                {
+                    "end_date": "Tue Jul 26 2022 00:00:00 GMT+0700 (Indochina Time)",
+                    "start_date": "2022-7-13 10:27:16",
+                    "description": "Name",
+                    "status": "Done",
+                    "title": "Name Name",
+                    "parent_id": ":rv:",
+                    "id": 49,
+                    "items": [
+                        {
+                            "id": "4",
+                            "title": "Child - 4"
+                        },
+                        {
+                            "id": "5",
+                            "title": "Child - 5",
+                            "items": [
+                                {
+                                    "id": "6",
+                                    "title": "Child - 6"
+                                },
+                                {
+                                    "id": "7",
+                                    "title": "Child - 7",
+                                    "items": [
+                                        {
+                                            "id": "2",
+                                            "title": "Child - 2"
+                                        },
+                                        {
+                                            "id": "3",
+                                            "title": "Child - 3",
+                                            "items": [
+                                                {
+                                                    "id": "8",
+                                                    "title": "Child - 8"
+                                                },
+                                                {
+                                                    "id": "9",
+                                                    "title": "Child - 9"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "end_date": "Sun Jul 31 2022 00:00:00 GMT+0700 (Indochina Time)",
+                    "start_date": "2022-7-13 10:21:48",
+                    "description": "aaaaaccc",
+                    "status": "Done",
+                    "title": "aaaaaccc",
+                    "id": 48
+                },
+                {
+                    "end_date": "Sun Jul 31 2022 00:00:00 GMT+0700 (Indochina Time)",
+                    "start_date": "2022-7-13 10:21:48",
+                    "description": "aaaaaccc",
+                    "status": "Done",
+                    "title": "aaaaaccc",
+                    "id": 48,
+                    "items": [
+                        {
+                            "id": "14",
+                            "title": "Child - 14"
+                        },
+                        {
+                            "id": "15",
+                            "title": "Child - 15",
+                            "items": [
+                                {
+                                    "id": "16",
+                                    "title": "Child - 16"
+                                },
+                                {
+                                    "id": "17",
+                                    "title": "Child - 17"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

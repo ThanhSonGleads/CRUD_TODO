@@ -33,6 +33,7 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { dateFormat } from "../../helper/dateformat";
 import SelectField from "../SelectField";
 import DateField from "../DateField";
+import { useId } from "react";
 
 const statusOptions = [{ label: "Processing" }, { label: "Done" }];
 
@@ -64,7 +65,7 @@ export default function Modal() {
   const isCreates = useSelector((state) => state.reducers.isCreate);
   const isUpdate = useSelector((state) => state.reducers.isUpdate);
   const data = useSelector((state) => state.reducers.data_update);
-
+  const parent_id = useId();
   const dispatch = useDispatch();
 
   console.log("dataUpdate", data);
@@ -78,6 +79,7 @@ export default function Modal() {
       description: data.description,
       start_date: data.start_date || dateFormat,
       end_date: data.end_date || "",
+      parent_id: data.parent_id || parent_id,
     });
   }, [form, data, dateFormat]);
 
@@ -128,6 +130,17 @@ export default function Modal() {
                   ) : (
                     ""
                   )}
+                  <Grid item xs={12} sm={6}>
+                    <InputField
+                      disabled
+                      id={parent_id}
+                      name={"parent_id"}
+                      form={form}
+                      label={"Parent_ID"}
+                      size="small"
+                      sx={{ mb: 2 }}
+                    />
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     <InputField
                       name={"title"}

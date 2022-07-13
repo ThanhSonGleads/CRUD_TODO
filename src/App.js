@@ -14,7 +14,7 @@ function App() {
           <Route exact path="/signin" element={<SignIn />} />
           <Route exact path="/mui" element={<MUI />} />
           <Route exact path="/crud-todo" element={<CrudTodo />} />
-          <Route exact path="/crud-todo/:parent_id" element={<TreeTodo />} />
+          <Route exact path="/crud-todo/tree-todo" element={<TreeTodo />} />
           <Route exact path="/" element={<SignUp />} />
         </Routes>
       </Suspense>
