@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Box } from "@mui/system";
@@ -29,6 +29,7 @@ import { useState } from "react";
 import {
   CREATE_PRODUCT,
   DOMAIN,
+  ORDER_PRODUCT,
   SEARCH_PRODUCT,
   SET_UPDATE,
   SORT_PRODUCT,
@@ -51,7 +52,6 @@ import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import Loading from "../component/Loading";
 import Modal from "../component/Modal";
-import { BarLoader } from "react-spinners";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -94,6 +94,7 @@ export default function CrudTodo() {
   const dispatch = useDispatch();
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [loadingLogout, setLoadingLogout] = useState(false);
   const [keyword, setKeyword] = useState("");
@@ -103,7 +104,6 @@ export default function CrudTodo() {
   const [statusValue, setStatusValue] = useState("");
   const [dataLength, setDataLength] = useState([]);
   const data = useSelector((state) => state.reducers.data_product);
-
   /*Search Params */
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -229,7 +229,11 @@ export default function CrudTodo() {
     dispatch(createAction(UPDATE_PRODUCT, true));
     dispatch(createAction(SET_UPDATE, dataUpdate.data));
   };
-
+  const handleOrder = async (id) => {
+    navigator(`/crud-todo/:${id}`);
+    let dataOrder = await axios.get(`${DOMAIN}/Products/${id}`);
+    dispatch(createAction(ORDER_PRODUCT, dataOrder.data));
+  };
   const handleCreate = () => {
     dispatch(createAction(CREATE_PRODUCT, true));
     dispatch(createAction(SET_UPDATE, []));
@@ -519,25 +523,37 @@ export default function CrudTodo() {
                       {item.end_date}
                     </StyledTableCell>
                     <StyledTableCell align="center">
-                      <LoadingButton
-                        sx={{ mr: 2 }}
-                        size="small"
-                        onClick={() => handleDelete(item.id)}
-                        loading={loadingDelete}
-                        variant="contained"
-                        color="error"
-                      >
-                        Delete
-                      </LoadingButton>
-                      <LoadingButton
-                        size="small"
-                        color="success"
-                        onClick={() => handleUpdate(item.id)}
-                        loading={loadingUpdate}
-                        variant="contained"
-                      >
-                        Update
-                      </LoadingButton>
+                      <Box display={"flex"}>
+                        <LoadingButton
+                          sx={{ mr: 2 }}
+                          size="small"
+                          onClick={() => handleDelete(item.id)}
+                          loading={loadingDelete}
+                          variant="contained"
+                          color="error"
+                        >
+                          Delete
+                        </LoadingButton>
+                        <LoadingButton
+                          size="small"
+                          sx={{ mr: 2 }}
+                          color="success"
+                          onClick={() => handleUpdate(item.id)}
+                          loading={loadingUpdate}
+                          variant="contained"
+                        >
+                          Update
+                        </LoadingButton>
+                        <LoadingButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleOrder(item.id)}
+                          loading={loadingOrder}
+                          variant="contained"
+                        >
+                          Order
+                        </LoadingButton>
+                      </Box>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

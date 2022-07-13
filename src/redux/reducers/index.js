@@ -11,6 +11,7 @@ import {
   FILTER_PRODUCT,
   SEARCH_SORT_PRODUCT,
   SET_UPDATE,
+  ORDER_PRODUCT,
 } from "../constant";
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
   signin: {},
   data_product: [],
   data_update: [],
+  data_order: [],
   isDelete: false,
   isCreate: false,
   isUpdate: false,
@@ -59,6 +61,9 @@ export default (state = initialState, action) => {
       return { ...state };
     case CREATE_PRODUCT:
       state.isCreate = action.payload;
+      return { ...state };
+    case ORDER_PRODUCT:
+      state.data_order = action.payload;
       return { ...state };
     default:
       return state;
