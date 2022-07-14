@@ -16,10 +16,12 @@ import {
   create_product,
   delete_product,
   filter_product,
+  filter_sort_product,
   get_product,
   get_product_pagination,
   order_detail,
   product_params,
+  search_filter_product,
   search_product,
   search_sort_product,
   sort_product,
@@ -108,36 +110,101 @@ export default function CrudTodo() {
   const [statusValue, setStatusValue] = useState("");
   const [dataLength, setDataLength] = useState([]);
   const data = useSelector((state) => state.reducers.data_product);
-
-  /*Search Params */
   const [searchParams, setSearchParams] = useSearchParams();
 
-  /*Effect SetSearchParams */
+  /*Get Value URL Params */
+  let keywordParams = searchParams.get("keyword");
+  let sortParams = searchParams.get("_sort");
+  let statusParams = searchParams.get("status");
+  let pageParams = searchParams.get("page");
+  let limitParams = searchParams.get("limit");
+
+  /*Check Va Call API Theo URL Query Params */
   useEffect(() => {
-    if (keyword.length === 0) {
-      searchParams.delete("keyword");
-      setSearchParams(searchParams, { replace: true });
+    /*Co Keyword Params Va Khong Co Status Sort Params */
+    if (keywordParams && !statusParams && !sortParams) {
+      dispatch(search_product(keywordParams, pageParams, limitParams));
     }
-    if (sortValue === "") {
-      searchParams.delete("_sort");
-      searchParams.delete("_order");
-      setSearchParams(searchParams, { replace: true });
+
+    /*Co Status Params Va Khong Co Keyword Sort Params */
+    if (statusParams && !keywordParams && !sortParams) {
+      dispatch(filter_product(statusParams, pageParams, limitParams));
     }
-    if (statusValue === "") {
-      searchParams.delete("status");
-      setSearchParams(searchParams, { replace: true });
+
+    /*Co Sort Params Va Khong Co Keyword Status Params */
+    if (sortParams && !keywordParams && !statusParams) {
+      dispatch(sort_product(sortParams, pageParams, limitParams));
     }
-  }, [keyword, sortValue, statusValue, searchParams]);
+
+    /*Co Status Params Va Keyword Ko Co Sort Params */
+    if (statusParams && keywordParams && !sortParams) {
+      dispatch(
+        search_filter_product(
+          keywordParams,
+          statusParams,
+          pageParams,
+          limitParams
+        )
+      );
+    }
+
+    /*Co Sort Params Va Keyword Ko Co Status Params */
+    if (sortParams && keywordParams && !statusParams) {
+      dispatch(
+        search_sort_product(keywordParams, sortParams, pageParams, limitParams)
+      );
+    }
+
+    /*Co Sort Params Va Status Ko Co Keyword Params */
+    if (sortParams && statusParams && !keywordParams) {
+      dispatch(
+        filter_sort_product(statusParams, sortParams, pageParams, limitParams)
+      );
+    }
+
+    /*Co Keyword Params Sort Params Va Status Params */
+    if (keywordParams && sortParams && statusParams) {
+      dispatch(
+        product_params(
+          keywordParams,
+          sortParams,
+          statusParams,
+          pageParams,
+          limitParams
+        )
+      );
+    }
+
+    /*Ko Co Keyword Params Sort Params Status Params PageParams, Limit Params */
+    if (
+      !keywordParams &&
+      !sortParams &&
+      !statusParams &&
+      !pageParams &&
+      !limitParams
+    ) {
+      dispatch(get_product_pagination(page, limit));
+    }
+
+    /*Ko Co Keyword Params Sort Params Status Params Nhung Co PageParams, Limit Params */
+    if (!keywordParams && !sortParams && !statusParams) {
+      dispatch(get_product_pagination(pageParams, limit));
+    }
+  }, [
+    dispatch,
+    page,
+    limit,
+    keywordParams,
+    statusParams,
+    sortParams,
+    pageParams,
+    limitParams,
+  ]);
 
   /* Effect Get All Products */
   useEffect(() => {
     getProduct();
   }, []);
-
-  /*Effect Get Products Pagination */
-  useEffect(() => {
-    dispatch(get_product_pagination(page, limit));
-  }, [dispatch]);
 
   /* Effect Loading Page */
   useEffect(() => {
@@ -173,55 +240,86 @@ export default function CrudTodo() {
   };
 
   const handleChangePage = (e, newPage) => {
-    console.log("newPage", newPage);
     setPage(newPage);
-    if ((sortValue || keyword || statusValue) == "") {
+
+    /*Ko Co Sort Params Nhung Co Keyword Params Va Status Params*/
+    if (!sortParams) {
       setSearchParams({
+        keyword: keywordParams,
+        status: statusParams,
         page: newPage,
         limit: limit,
       });
-      dispatch(get_product_pagination(newPage, limit));
-    } else if ((sortValue || keyword) == "") {
+    }
+
+    /*Ko Co Status Params Nhung Co Keyword Params Va Sort Params*/
+    if (!statusParams) {
       setSearchParams({
-        status: statusValue,
-        page: newPage,
-        limit: limit,
-      });
-      dispatch(filter_product(statusValue, newPage, limit));
-    } else if ((statusValue || keyword) == "") {
-      setSearchParams({
-        _sort: sortValue,
+        keyword: keywordParams,
+        _sort: sortParams,
         _order: "asc",
         page: newPage,
         limit: limit,
       });
-      dispatch(sort_product(sortValue, newPage, limit));
-    } else if ((sortValue || statusValue) == "") {
+    }
+
+    /*Ko Co Sort Params Status Params Nhung Co Keyword Params*/
+    if (!sortParams && !statusParams) {
       setSearchParams({
-        keyword: keyword,
+        keyword: keywordParams,
         page: newPage,
         limit: limit,
       });
-      dispatch(search_product(keyword, newPage, limit));
-    } else if (statusValue === "") {
+    }
+
+    /*Ko Co Keyword Params Sort Params Nhung Co Status Params */
+    if (!keywordParams && !sortParams) {
       setSearchParams({
-        keyword: keyword,
-        _sort: sortValue,
+        status: statusParams,
+        page: newPage,
+        limit: limit,
+      });
+    }
+    
+    /*Ko Co Keyword Params Status Params Nhung Co Sort Params */
+    if (!keywordParams && !statusParams) {
+      setSearchParams({
+        _sort: sortParams,
         _order: "asc",
         page: newPage,
         limit: limit,
       });
-      dispatch(search_sort_product(keyword, sortValue, newPage, limit));
-    } else {
+    }
+
+    /*Ko Co Keyword Params  Nhung Co Sort Params Status Params */
+    if (!keywordParams && sortParams && statusParams) {
       setSearchParams({
-        keyword: keyword,
-        _sort: sortValue,
+        status: statusParams,
+        _sort: sortParams,
         _order: "asc",
-        status: statusValue,
         page: newPage,
         limit: limit,
       });
-      dispatch(product_params(keyword, sortValue, statusValue, newPage, limit));
+    }
+
+    /* Co Keyword Params Sort Params Status Params */
+    if (keywordParams && sortParams && statusParams) {
+      setSearchParams({
+        keyword: keywordParams,
+        status: statusParams,
+        _sort: sortParams,
+        _order: "asc",
+        page: newPage,
+        limit: limit,
+      });
+    }
+    
+    /* Ko Co Keyword Params Sort Params Status Params */
+    if (!keywordParams && !sortParams && !statusParams) {
+      setSearchParams({
+        page: newPage,
+        limit: limit,
+      });
     }
   };
 
@@ -247,32 +345,47 @@ export default function CrudTodo() {
 
   const handleSearch = () => {
     setLoadingSearch(true);
-    if (statusValue === "") {
+
+    /* Ko Co Sort Params Nhung Co Status Params */
+    if (!sortParams && statusParams) {
       setSearchParams({
         keyword: keyword,
-        _sort: sortValue,
+        status: statusParams,
+        page: page,
+        limit: limit,
+      });
+    }
+
+    /* Ko Co Status Params Nhung Co Sort Params */
+    if (sortParams && !statusParams) {
+      setSearchParams({
+        keyword: keyword,
+        _sort: sortParams,
         _order: "asc",
         page: page,
         limit: limit,
       });
-      dispatch(search_sort_product(keyword, sortValue, page, limit));
-    } else if (sortValue === "" && statusValue === "") {
+    }
+
+    /* Ko Co Status Params Sort Params */
+    if (!sortParams && !statusParams) {
       setSearchParams({
         keyword: keyword,
         page: page,
         limit: limit,
       });
-      dispatch(search_product(keyword, page, limit));
-    } else {
+    }
+
+    /* Co Status Params Sort Params */
+    if (sortParams && statusParams) {
       setSearchParams({
         keyword: keyword,
-        _sort: sortValue,
+        status: statusParams,
+        _sort: sortParams,
         _order: "asc",
-        status: statusValue,
         page: page,
         limit: limit,
       });
-      dispatch(product_params(keyword, sortValue, statusValue, page, limit));
     }
     setLoadingSearch(false);
   };
@@ -284,56 +397,96 @@ export default function CrudTodo() {
   const handleSort = (e) => {
     let valueSort = e.target.value;
     setSortValue(valueSort);
-    if (statusValue === "" && keyword === "") {
+
+    /* Ko Co Status Params Nhung Co Keyword Params */
+    if (!statusParams && keywordParams) {
+      setSearchParams({
+        keyword: keywordParams,
+        _sort: valueSort,
+        _order: "asc",
+        page: page,
+        limit: limit,
+      });
+    }
+
+    /* Ko Co Status Params Keyword Params */
+    if (!statusParams && !keywordParams) {
       setSearchParams({
         _sort: valueSort,
         _order: "asc",
         page: page,
         limit: limit,
       });
-      dispatch(sort_product(valueSort, page, limit));
-    } else if (statusValue === "") {
+    }
+
+    /* Co Status Params Nhung Co Keyword Params */
+    if (statusParams && !keywordParams) {
       setSearchParams({
-        keyword: keyword,
+        status: statusParams,
         _sort: valueSort,
         _order: "asc",
         page: page,
         limit: limit,
       });
-      dispatch(search_sort_product(keyword, valueSort, page, limit));
-    } else {
+    }
+
+    /* Co Status Params Keyword Params */
+    if (keywordParams && statusParams) {
       setSearchParams({
-        keyword: keyword,
+        keyword: keywordParams,
+        status: statusParams,
         _sort: valueSort,
         _order: "asc",
-        status: statusValue,
         page: page,
         limit: limit,
       });
-      dispatch(product_params(keyword, valueSort, statusValue, page, limit));
     }
   };
 
   const handleFilterStatus = (e) => {
     let valueFilter = e.target.value;
     setStatusValue(valueFilter);
-    if (sortValue === "" && keyword === "") {
+
+    /*Ko Co Sort Params Keyword Params */
+    if (!sortParams && !keywordParams) {
       setSearchParams({
         status: valueFilter,
         page: page,
         limit: limit,
       });
-      dispatch(filter_product(valueFilter, page, limit));
-    } else {
+    }
+
+    /*Ko Co Sort Params Nhung Co Keyword Params */
+    if (!sortParams && keywordParams) {
       setSearchParams({
-        keyword: keyword,
-        _sort: sortValue,
+        keyword: keywordParams,
+        status: valueFilter,
+        page: page,
+        limit: limit,
+      });
+    }
+
+    /* Co Sort Params Nhung Ko Co Keyword Params */
+    if (sortParams && !keywordParams) {
+      setSearchParams({
+        status: valueFilter,
+        _sort: sortParams,
         _order: "asc",
-        status: valueFilter,
         page: page,
         limit: limit,
       });
-      dispatch(product_params(keyword, sortValue, valueFilter, page, limit));
+    }
+    
+    /* Co Sort Params Keyword Params */
+    if (sortParams && keywordParams) {
+      setSearchParams({
+        keyword: keywordParams,
+        status: valueFilter,
+        _sort: sortParams,
+        _order: "asc",
+        page: page,
+        limit: limit,
+      });
     }
   };
 

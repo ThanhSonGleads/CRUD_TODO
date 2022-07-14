@@ -4,7 +4,7 @@ import { now } from "lodash";
 import React from "react";
 import { Controller } from "react-hook-form";
 
-export default function DateField({ form, label, minDate, maxDate, name }) {
+export default function DateField({ form, label, minDate, maxDate, name}) {
   return (
     <Controller
       name={name}

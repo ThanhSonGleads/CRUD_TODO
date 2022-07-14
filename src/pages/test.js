@@ -1,42 +1,41 @@
+import { LoadingButton } from "@mui/lab";
+import { Box, Grid } from "@mui/material";
 import React from "react";
+import { useEffect } from "react";
 import { Pie } from "react-chartjs-2";
-
-const state = {
-  labels: ["January", "February", "March", "April", "May"],
-  datasets: [
-    {
-      label: "Rainfall",
-      backgroundColor: ["#B21F00", "#C9DE00", "#2FDE00", "#00A6B4", "#6800B4"],
-      hoverBackgroundColor: [
-        "#501800",
-        "#4B5000",
-        "#175000",
-        "#003350",
-        "#35014F",
-      ],
-      data: [65, 59, 80, 81, 56],
-    },
-  ],
-};
+import { useForm } from "react-hook-form";
+import InputField from "../component/InputField";
 
 export default function MUI() {
+  const form = useForm({
+    defaultValues: {
+      start_date: null,
+    },
+  });
+  useEffect(() => {
+    form.reset({
+      start_date: form.start_date,
+    });
+  }, [form]);
+
+  const handleChange = (e) => {
+    console.log("values", e.target.value);
+  };
   return (
     <div>
-      <Pie
-        data={state}
-        options={{
-          title: {
-            display: true,
-            text: "Average Rainfall per month",
-            fontSize: 20,
-          },
-          legend: {
-            display: true,
-            position: "right",
-          },
-        }}
-      />
-
+        <Box sx={{ width: "30%" }}>
+          <Grid item xs={6} sm={6}>
+            <InputField
+              debounceTime={3000}
+              onChange={handleChange}
+              name={"start_date"}
+              form={form}
+              label={"Start Date"}
+              size="small"
+              sx={{ mb: 2 }}
+            />
+          </Grid>
+        </Box>
     </div>
   );
 }

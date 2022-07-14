@@ -12,6 +12,10 @@ import {
   SEARCH_SORT_PRODUCT,
   SET_UPDATE,
   ORDER_PRODUCT,
+  SEARCH_FILTER_PRODUCT,
+  FILTER_SORT_PRODUCT,
+  FILTER_STATISTIC,
+  TARGET_STATISTIC,
 } from "../constant";
 
 const initialState = {
@@ -20,6 +24,8 @@ const initialState = {
   data_product: [],
   data_update: [],
   data_order: [],
+  data_statistic: [],
+  data_tager_statistic: [],
   isDelete: false,
   isCreate: false,
   isUpdate: false,
@@ -44,6 +50,12 @@ export default (state = initialState, action) => {
     case SEARCH_SORT_PRODUCT:
       state.data_product = action.payload;
       return { ...state };
+    case SEARCH_FILTER_PRODUCT:
+      state.data_product = action.payload;
+      return { ...state };
+    case FILTER_SORT_PRODUCT:
+      state.data_product = action.payload;
+      return { ...state };
     case PRODUCT_PARAMS:
       state.data_product = action.payload;
       return { ...state };
@@ -64,6 +76,12 @@ export default (state = initialState, action) => {
       return { ...state };
     case ORDER_PRODUCT:
       state.data_order = action.payload;
+      return { ...state };
+    case FILTER_STATISTIC:
+      state.data_statistic = action.payload;
+      return { ...state };
+    case TARGET_STATISTIC:
+      state.data_tager_statistic = action.payload;
       return { ...state };
     default:
       return state;
