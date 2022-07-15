@@ -1,16 +1,21 @@
 import { TextField } from "@mui/material";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
-import { now } from "lodash";
+import { debounce, now } from "lodash";
 import React from "react";
 import { Controller } from "react-hook-form";
 
-export default function DateField({ form, label, minDate, maxDate, name}) {
+export default function DateField({ form, label, minDate, maxDate, name, onChange, debounceTime = 0}) {
+
+  const callDebounce = debounce((e) => {
+    onChange(e);
+  }, debounceTime);
+  
   return (
     <Controller
       name={name}
       control={form.control}
       render={({
-        field: { onChange, value },
+        field,
         fieldState: { invalid, isTouched, isDirty, error },
       }) => {
         return (
@@ -18,9 +23,12 @@ export default function DateField({ form, label, minDate, maxDate, name}) {
             minDate={minDate}
             maxDate={maxDate}
             label={label}
-            value={value}
-            inputFormat="MM/dd/yyyy"
-            onChange={onChange}
+            value={field.value}
+            inputFormat="MM/yyyy"
+            onChange={(e) => {
+              field.onChange(e);
+              onChange && callDebounce(e);
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}

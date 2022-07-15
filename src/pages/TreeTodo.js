@@ -127,7 +127,11 @@ export default function TreeTodo() {
   };
 
   const renderTree = (nodes) => (
-    <TreeItem key={nodes.parent_id} nodeId={nodes.parent_id} label={nodes.title}>
+    <TreeItem
+      key={nodes.parent_id}
+      nodeId={nodes.parent_id}
+      label={nodes.title}
+    >
       {Array.isArray(nodes.items)
         ? nodes.items.map((node) => renderTree(node))
         : null}
@@ -148,40 +152,6 @@ export default function TreeTodo() {
           >
             {renderTree(datatree)}
           </TreeView>
-          {/*<TreeView
-            aria-label="multi-select"
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            multiSelect
-            sx={{ height: "10000px", flexGrow: 1, maxWidth: "1000px" }}
-          >
-            <TreeItem nodeId="1" label="Title">
-              {data?.map((item) => {
-                return <TreeItem nodeId={item.id} label={item.title} />;
-              })}
-            </TreeItem>
-            <TreeItem nodeId="2" label="Description">
-              {data?.map((item) => {
-                return <TreeItem nodeId={item.id} label={item.description} />;
-              })}
-            </TreeItem>
-            <TreeItem nodeId="3" label="Status">
-              {data?.map((item) => {
-                return <TreeItem nodeId={item.id} label={item.status} />;
-              })}
-            </TreeItem>
-            <TreeItem nodeId="4" label="Start Date">
-              {data?.map((item) => {
-                return <TreeItem nodeId={item.id} label={item.start_date} />;
-              })}
-            </TreeItem>
-            <TreeItem nodeId="5" label="End Date">
-              {data?.map((item) => {
-                return <TreeItem nodeId={item.id} label={item.end_date} />;
-              })}
-            </TreeItem>
-            <TreeItem nodeId="6" label="Parent"></TreeItem>
-          </TreeView>*/}
         </Box>
       )}
     </>

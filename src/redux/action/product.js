@@ -20,8 +20,9 @@ import {
 import { createAction } from "./createAction";
 import axios from "axios";
 import Swal from "sweetalert2";
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTc3NzgxMTAsImV4cCI6MTY1Nzc5OTcxMCwiZGF0YSI6IjA5OTFlN2Y4YjNlZTY1ZTFlMTcxZTNiZTA4ZThhMzI4In0.Pleyu5vQUZDX34tSHeMQ5WNpuI3cZzdES9vdQ-MfScQ";
+
+const access_token = localStorage.getItem("accessToken");
+
 export const get_product_pagination = (page, limit) => {
   try {
     return async (dispatch) => {
@@ -243,7 +244,7 @@ export const filter_statistic = (time_from, time_to) => {
         url: `http://192.168.1.212:8080/api/statistic/admin?filter={"created_time_from": "${time_from}", "created_time_to": "${time_to}"}`,
         method: "GET",
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + access_token,
         },
       })
         .then((res) => {
@@ -264,7 +265,7 @@ export const target_statistic = (time_from, time_to) => {
         url: `http://192.168.1.212:8080/api/statistic/admin?filter={"created_time_from": "${time_from}", "created_time_to": "${time_to}", "target_type_id":1 }`,
         method: "GET",
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + access_token,
         },
       })
         .then((res) => {

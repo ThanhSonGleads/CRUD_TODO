@@ -16,11 +16,13 @@ import {
   FILTER_SORT_PRODUCT,
   FILTER_STATISTIC,
   TARGET_STATISTIC,
+  SIGNIN_STATISTIC,
 } from "../constant";
 
 const initialState = {
   signup: {},
   signin: {},
+  signin_statistic: {},
   data_product: [],
   data_update: [],
   data_order: [],
@@ -37,6 +39,9 @@ export default (state = initialState, action) => {
       return { ...state };
     case SIGNIN:
       state.signin = action.payload;
+      return { ...state };
+    case SIGNIN_STATISTIC:
+      state.signin_statistic = action.payload;
       return { ...state };
     case SEARCH_PRODUCT:
       state.data_product = action.payload;

@@ -1,6 +1,6 @@
 import axios from "axios";
 import Swal from "sweetalert2";
-import { DOMAIN, SIGNIN, SIGNUP } from "../constant";
+import { DOMAIN, SIGNIN, SIGNIN_STATISTIC, SIGNUP } from "../constant";
 import { createAction } from "./createAction";
 
 export const signUp = (form) => {
@@ -69,6 +69,30 @@ export const signIn = (form) => {
         })
         .catch((err) => {
           alert(err);
+        });
+    };
+  } catch (err) {}
+};
+
+export const signin_statistic = (form) => {
+  try {
+    return async (dispatch) => {
+      await axios({
+        url: `http://192.168.1.212:8080/api/auth`,
+        method: "POST",
+        data: form,
+      })
+        .then((res) => {
+          dispatch(createAction(SIGNIN_STATISTIC, res.data.data.access_token));
+          Swal.fire({
+            title: "",
+            html: `<a  style="color: #27ae60">Login Successfully</a>`,
+            icon: "success",
+            confirmButtonText: "Confirm",
+          }).then((window.location.href = "/chart-statistic"));
+        })
+        .catch((err) => {
+          console.log(err);
         });
     };
   } catch (err) {}

@@ -6,6 +6,7 @@ import CrudTodo from "./pages/Crud-todo";
 import MUI from "./pages/test";
 import TreeTodo from "./pages/TreeTodo";
 import { ChartStatistic } from "./pages/ChartStatistic";
+import SignInSide from "./pages/SignInStatistic";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route exact path="/crud-todo" element={<CrudTodo />} />
           <Route exact path="/chart-statistic" element={<ChartStatistic />} />
           <Route exact path="/crud-todo/tree-todo" element={<TreeTodo />} />
+          <Route exact path="/signin-statistic" element={<SignInSide />} />
           <Route exact path="/" element={<SignUp />} />
         </Routes>
       </Suspense>
