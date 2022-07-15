@@ -280,7 +280,7 @@ export default function CrudTodo() {
         limit: limit,
       });
     }
-    
+
     /*Ko Co Keyword Params Status Params Nhung Co Sort Params */
     if (!keywordParams && !statusParams) {
       setSearchParams({
@@ -313,7 +313,7 @@ export default function CrudTodo() {
         limit: limit,
       });
     }
-    
+
     /* Ko Co Keyword Params Sort Params Status Params */
     if (!keywordParams && !sortParams && !statusParams) {
       setSearchParams({
@@ -476,7 +476,7 @@ export default function CrudTodo() {
         limit: limit,
       });
     }
-    
+
     /* Co Sort Params Keyword Params */
     if (sortParams && keywordParams) {
       setSearchParams({
@@ -592,7 +592,7 @@ export default function CrudTodo() {
                   <Selected
                     labelId="filter-status-label"
                     id="filter-status"
-                    value={statusValue}
+                    value={statusParams}
                     variant="standard"
                     label="Filter"
                     onChange={handleFilterStatus}
@@ -604,7 +604,7 @@ export default function CrudTodo() {
                   <Selected
                     labelId="sort-label"
                     id="sort"
-                    value={sortValue}
+                    value={sortParams}
                     variant="standard"
                     label="Sort"
                     onChange={handleSort}
@@ -716,7 +716,7 @@ export default function CrudTodo() {
             >
               <Pagination
                 count={Math.ceil(dataLength / 5)}
-                page={page}
+                page={!pageParams ? page : pageParams}
                 onChange={handleChangePage}
                 className="pagination"
                 shape="rounded"

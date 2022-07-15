@@ -4,12 +4,19 @@ import { debounce, now } from "lodash";
 import React from "react";
 import { Controller } from "react-hook-form";
 
-export default function DateField({ form, label, minDate, maxDate, name, onChange, debounceTime = 0}) {
-
+export default function DateField({
+  form,
+  label,
+  minDate,
+  maxDate,
+  name,
+  onChange,
+  debounceTime = 0,
+}) {
   const callDebounce = debounce((e) => {
     onChange(e);
   }, debounceTime);
-  
+
   return (
     <Controller
       name={name}
@@ -20,6 +27,7 @@ export default function DateField({ form, label, minDate, maxDate, name, onChang
       }) => {
         return (
           <DesktopDatePicker
+            views={["year", "month"]}
             minDate={minDate}
             maxDate={maxDate}
             label={label}
