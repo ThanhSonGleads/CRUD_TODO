@@ -84,12 +84,15 @@ export const signin_statistic = (form) => {
       })
         .then((res) => {
           dispatch(createAction(SIGNIN_STATISTIC, res.data.data.access_token));
+          localStorage.setItem("accessToken", res.data.data.access_token);
           Swal.fire({
             title: "",
             html: `<a  style="color: #27ae60">Login Successfully</a>`,
             icon: "success",
             confirmButtonText: "Confirm",
-          }).then((window.location.href = "/chart-statistic"));
+          }).then(setTimeout(() => {
+            window.location.href = "/chart-statistic"
+          }, 1000));
         })
         .catch((err) => {
           console.log(err);

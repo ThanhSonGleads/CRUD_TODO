@@ -40,7 +40,6 @@ export default function SignInSide() {
   });
 
   const dispatch = useDispatch();
-  const access_token = useSelector((state) => state.reducers.signin_statistic);
 
   const [loading, setLoading] = useState(false);
 
@@ -60,8 +59,7 @@ export default function SignInSide() {
     }, 1000);
   }, []);
 
-  /*Set Access Token Vao LocalStorage*/
-  localStorage.setItem("accessToken", access_token);
+  localStorage.removeItem("accessToken");
 
   const onSubmit = (values) => {
     console.log("values", values);

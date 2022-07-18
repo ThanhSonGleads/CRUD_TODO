@@ -3,157 +3,56 @@ import TreeView from "@mui/lab/TreeView";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import TreeItem from "@mui/lab/TreeItem";
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
 import { useState } from "react";
-import Loading from "../component/Loading";
-import { order_detail } from "../redux/action/product";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { array } from "yup/lib/locale";
 import axios from "axios";
 import { DOMAIN } from "../redux/constant";
-import { Box } from "@mui/material";
-const datatree = {
-  parent_id: "root",
-  title: "Parent",
-  items: [
-    {
-      end_date: "Tue Jul 26 2022 00:00:00 GMT+0700 (Indochina Time)",
-      start_date: "2022-7-13 10:27:16",
-      description: "Name",
-      status: "Done",
-      title: "Name Name",
-      parent_id: 49,
-      items: [
-        {
-          parent_id: "4",
-          title: "Child - 4",
-        },
-        {
-          parent_id: "5",
-          title: "Child - 5",
-          items: [
-            {
-              parent_id: "6",
-              title: "Child - 6",
-            },
-            {
-              parent_id: "7",
-              title: "Child - 7",
-              items: [
-                {
-                  parent_id: "2",
-                  title: "Child - 2",
-                },
-                {
-                  parent_id: "3",
-                  title: "Child - 3",
-                  items: [
-                    {
-                      parent_id: "8",
-                      title: "Child - 8",
-                    },
-                    {
-                      parent_id: "9",
-                      title: "Child - 9",
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      end_date: "Sun Jul 31 2022 00:00:00 GMT+0700 (Indochina Time)",
-      start_date: "2022-7-13 10:21:48",
-      description: "aaaaaccc",
-      status: "Done",
-      title: "aaaaaccc",
-      parent_id: 85,
-    },
-    {
-      end_date: "Sun Jul 31 2022 00:00:00 GMT+0700 (Indochina Time)",
-      start_date: "2022-7-13 10:21:48",
-      description: "aaaaaccc",
-      status: "Done",
-      title: "aaaaaccc",
-      parent_id: 48,
-      items: [
-        {
-          parent_id: "14",
-          title: "Child - 14",
-        },
-        {
-          parent_id: "15",
-          title: "Child - 15",
-          items: [
-            {
-              parent_id: "16",
-              title: "Child - 16",
-            },
-            {
-              parent_id: "17",
-              title: "Child - 17",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
 
-export default function TreeTodo() {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  console.log("data", data);
+export default function MUI() {
 
-  /* Effect Loading Page */
+  const [dataTree, setDataTree] = useState([]);
+
+  /*Effect Get All Data Products */
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    handleGetDataProducts()
   }, []);
-
-  /* Effect Get All Products */
-  useEffect(() => {
-    getProduct();
-  }, []);
-
-  const getProduct = async () => {
-    const dataProduct = await axios.get(`${DOMAIN}/Products`);
-    setData(dataProduct.data);
+  
+  const handleGetDataProducts = async () => {
+    const data = await axios.get(`${DOMAIN}/Products`)
+    setDataTree(data.data)
   };
-
-  const renderTree = (nodes) => (
-    <TreeItem
-      key={nodes.parent_id}
-      nodeId={nodes.parent_id}
-      label={nodes.title}
-    >
-      {Array.isArray(nodes.items)
-        ? nodes.items.map((node) => renderTree(node))
+  
+  const renderTreeItem = (node) => (
+    <TreeItem key={node.id} nodeId={node.id} label={node.title}>
+      {Array.isArray(node.items)
+        ? node.items.map((node) => renderTreeItem(node))
         : null}
     </TreeItem>
   );
+
+  const renderTree = (nodes) => {
+    return nodes.map((item) => {
+      return (
+        <TreeItem key={item.id} nodeId={item.id} label={item.title}>
+            {/* Check item.items Is An Array */}
+          {Array.isArray(item.items)
+            ? item.items.map((node) => renderTreeItem(node))
+            : null}
+        </TreeItem>
+      );
+    });
+  };
+
   return (
-    <>
-      {loading ? (
-        <Loading />
-      ) : (
-        <Box sx={{ width: "1000px", margin: "auto", mt: 5 }}>
-          <TreeView
-            aria-label="rich object"
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpanded={["root"]}
-            defaultExpandIcon={<ChevronRightIcon />}
-            sx={{ height: 110, flexGrow: 1 }}
-          >
-            {renderTree(datatree)}
-          </TreeView>
-        </Box>
-      )}
-    </>
+    <TreeView
+      aria-label="file system navigator"
+      defaultCollapseIcon={<ExpandMoreIcon />}
+      defaultExpandIcon={<ChevronRightIcon />}
+      sx={{ height: 240, flexGrow: 1, maxWidth: 400, mt: 15, ml: 15 }}
+    >
+      {renderTree(dataTree)}
+    </TreeView>
   );
 }

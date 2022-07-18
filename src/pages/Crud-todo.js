@@ -222,7 +222,7 @@ export default function CrudTodo() {
         title: "",
         html: `<span style="color:red">Please Login</span>`,
         icon: "error",
-        confirmButtonText: "Xác Nhận",
+        confirmButtonText: "Confirm",
       });
     }
   }, [dataSignin]);
@@ -391,6 +391,24 @@ export default function CrudTodo() {
   };
 
   const handleReset = () => {
+    searchParams.delete("keyword");
+    setSearchParams(searchParams, { replace: true });
+
+    searchParams.delete("_sort");
+    setSearchParams(searchParams, { replace: true });
+
+    searchParams.delete("status");
+    setSearchParams(searchParams, { replace: true });
+
+    searchParams.delete("page");
+    setSearchParams(searchParams, { replace: true });
+
+    searchParams.delete("limit");
+    setSearchParams(searchParams, { replace: true });
+
+    searchParams.delete("_order");
+    setSearchParams(searchParams, { replace: true });
+
     window.location.reload();
   };
 
@@ -539,6 +557,7 @@ export default function CrudTodo() {
                     name={"keyword"}
                     form={form}
                     label={"Search"}
+                    value={keywordParams}
                     size="small"
                     sx={{ mb: 2, mr: 2 }}
                     flexShrink={0}
@@ -716,7 +735,7 @@ export default function CrudTodo() {
             >
               <Pagination
                 count={Math.ceil(dataLength / 5)}
-                page={!pageParams ? page : pageParams}
+                page={+pageParams}
                 onChange={handleChangePage}
                 className="pagination"
                 shape="rounded"

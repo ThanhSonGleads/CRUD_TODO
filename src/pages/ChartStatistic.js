@@ -17,6 +17,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { targetApi } from "../api/targetApi";
 import Loading from "../component/Loading";
+import { ChartComponent } from "../component/ChartComponent";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 Chart.register(...registerables);
 
@@ -37,12 +40,13 @@ export const ChartStatistic = () => {
   });
 
   const dispatch = useDispatch();
-
+  const navigator = useNavigate()
   const [fromValue, setFromValue] = useState();
   const [toValue, setToValue] = useState();
   const [dataTargetContact, setDataTargetContact] = useState([]);
   const [dataTargetCompany, setDataTargetCompany] = useState([]);
   const [loading, setLoading] = useState(false);
+  const dataSignin = localStorage.getItem("accessToken")
 
   /*Get Data Total Target Contact And Company */
   let TotalTargetContact = dataTargetContact.total_target?.map((item) => {
@@ -78,7 +82,7 @@ export const ChartStatistic = () => {
       return item.Country.name;
     }
   );
-  console.log("CountryNameTargetCompany", CountryNameTargetCompany);
+  
   /* Get Count Target, CountActual Theo Contact Va Company */
   let CountTargetContact = dataTargetContact.total_target_in_country?.map(
     (item) => {
@@ -260,11 +264,24 @@ export const ChartStatistic = () => {
     ],
   };
 
+/* Effect Check Login Redirect */
+useEffect(() => {
+    if (!dataSignin) {
+      navigator("/signin-statistic");
+      Swal.fire({
+        title: "",
+        html: `<span style="color:red">Please Login</span>`,
+        icon: "error",
+        confirmButtonText: "Comfirm",
+      });
+    }
+  }, [dataSignin]);
+
   /*Effect Update Form */
   useEffect(() => {
     form.reset({
-      to: form.to || '',
-      from: form.from || '',
+      to: form.to || "",
+      from: form.from || "",
     });
   }, [form]);
 
@@ -347,86 +364,40 @@ export const ChartStatistic = () => {
           <Box sx={{ width: "80%", margin: "auto" }}>
             <Box display={"flex"} justifyContent={"space-between"}>
               <Box sx={{ width: "30%", mb: 5 }}>
-                <Pie
+                <ChartComponent
+                  type="Pie"
                   data={dataPieContact}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      title: {
-                        display: true,
-                        text: "% Target New Contacts",
-                      },
-                    },
-                  }}
+                  text={"% Target New Contacts"}
                 />
               </Box>
               <Box sx={{ width: "30%", mb: 5 }}>
-                <Pie
+                <ChartComponent
+                  type="Pie"
                   data={dataPieCountry}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      title: {
-                        display: true,
-                        text: "% Target New Companies",
-                      },
-                    },
-                  }}
+                  text={"% Target New Companies"}
                 />
               </Box>
             </Box>
           </Box>
           <Box display={"flex"} sx={{ width: "100%", margin: "auto" }}>
             <Box sx={{ width: "50%", mt: 5 }}>
-              <Bar
+              <ChartComponent
+                type="Bar"
                 data={dataBarContact}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      position: "top",
-                    },
-                    title: {
-                      display: true,
-                      text: "Target New Contacts In Countries",
-                    },
-                  },
-                  indexAxis: "y",
-                  scales: {
-                    x: {
-                      stacked: true,
-                    },
-                    y: {
-                      stacked: true,
-                    },
-                  },
-                }}
+                text={"Target New Contacts In Countries"}
+                index={"y"}
+                drawBorderX={false}
+                drawBorderY={false}
               />
             </Box>
             <Box sx={{ width: "50%", mt: 5 }}>
-              <Bar
+              <ChartComponent
+                type="Bar"
                 data={dataBarCompany}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      position: "top",
-                    },
-                    title: {
-                      display: true,
-                      text: "Target New Companies In Countries",
-                    },
-                  },
-                  indexAxis: "y",
-                  scales: {
-                    x: {
-                      stacked: true,
-                    },
-                    y: {
-                      stacked: true,
-                    },
-                  },
-                }}
+                text={"Target New Companies In Countries"}
+                index={"y"}
+                drawBorderX={false}
+                drawBorderY={false}
               />
             </Box>
           </Box>

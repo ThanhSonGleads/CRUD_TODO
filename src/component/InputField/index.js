@@ -3,7 +3,7 @@ import {TextField} from "@mui/material";
 import {debounce} from 'lodash';
 import {Controller} from "react-hook-form";
 
-function InputField({form, id, label, multiline = false, name, disabled = false, readOnly = false, type = 'text', onChange, debounceTime = 0, ...props}) {
+function InputField({form, id, value = '', label, multiline = false, name, disabled = false, readOnly = false, type = 'text', onChange, debounceTime = 0, ...props}) {
 
     const callDebounce = debounce(e => {
         onChange(e);
@@ -38,7 +38,7 @@ function InputField({form, id, label, multiline = false, name, disabled = false,
                                disabled={disabled}
                                helperText={error?.message || ''}
                                type={type}
-                               value={field.value ?? ''}
+                               value={field.value ?? value}
                                variant="standard"
                                {...props}
                                InputProps={InputProps}
