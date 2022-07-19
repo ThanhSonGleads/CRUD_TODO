@@ -77,7 +77,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function CrudTodo() {
-  /*Luu url params khi F5 van giu nguyen data */
 
   const sortOptions = [
     "title",
@@ -112,6 +111,7 @@ export default function CrudTodo() {
   const data = useSelector((state) => state.reducers.data_product);
   const [searchParams, setSearchParams] = useSearchParams();
 
+  /*Luu url params khi F5 van giu nguyen data */
   /*Get Value URL Params */
   let keywordParams = searchParams.get("keyword");
   let sortParams = searchParams.get("_sort");

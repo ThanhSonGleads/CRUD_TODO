@@ -77,6 +77,7 @@ export default function SignUp() {
   /*Effect Remove Key LocalStorage */
   useEffect(() => {
     localStorage.removeItem("login");
+    localStorage.removeItem("accessToken");
   }, []);
 
   /* Effect Loading Page */
